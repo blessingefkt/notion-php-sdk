@@ -34,7 +34,6 @@ class Page extends ObjectBase
         return $this;
     }
 
-    // TODO: Implement rich text logic
     public function addBlock($block): self
     {
         $this->children[] = $block;
@@ -44,17 +43,17 @@ class Page extends ObjectBase
     public function prepareForRequest()
     {
         $data = [
-            'parent' => $this->parent,
             'properties' => [],
         ];
+        
+        if (isset($this->parent))
+            $data['parent'] = $this->parent;
 
         foreach ($this->properties as $property) {
             $value = $property->toPageValue();
-
             if (!$value) {
                 continue;
             }
-
             $data['properties'][$property->name] = $value;
         }
 
@@ -65,19 +64,11 @@ class Page extends ObjectBase
         return $data;
     }
 
-    public function initProperties($data): self
-    {
-        $this->properties = $data;
-
-        return $this;
-    }
-
     public function __get($property)
     {
-        $property = $this->propertyIdMap[$property] ?? $property;
-
+        $property = $this->normalizePropertyName($property);
         if (!isset($this->properties[$property])) {
-            return $this->$property;
+            return $this->{$property};
         }
 
         return $this->properties[$property]->value();
@@ -85,10 +76,9 @@ class Page extends ObjectBase
 
     public function __set($property, $value)
     {
-        $property = $this->propertyIdMap[$property] ?? $property;
-
+        $property = $this->normalizePropertyName($property);
         if (!isset($this->properties[$property])) {
-            $this->$property = $value;
+            $this->{$property} = $value;
             return;
         }
 
@@ -97,8 +87,7 @@ class Page extends ObjectBase
 
     public function __isset($property)
     {
-        $property = $this->propertyIdMap[$property] ?? $property;
-
+        $property = $this->normalizePropertyName($property);
         return isset($this->properties[$property]);
     }
 
@@ -147,6 +136,17 @@ class Page extends ObjectBase
             }
         }
         return $data;
+    }
+
+    /**
+     * @param $property
+     * @return mixed|string
+     */
+    protected function normalizePropertyName($property)
+    {
+        if (isset($this->propertyAliases[$property]))
+            return $this->propertyAliases[$property];
+        return $property;
     }
 
 }
