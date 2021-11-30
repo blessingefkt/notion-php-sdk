@@ -2,66 +2,84 @@
 
 class Request
 {
-    protected $client;
+	protected \Notion\Http\Client $client;
 
-    protected $body;
+	public $body;
+	public $options = [];
+	public $method = 'get';
+	public $endpoint;
 
-    protected $result;
+	protected $result;
 
-    protected $options = [];
+	public function __construct(Client $client)
+	{
+		$this->client = $client;
+	}
 
-    protected $endpoint;
+	public function filter($filter)
+	{
+		if (!empty($filter)) {
+			$this->body['filter'] = [];
+		}
 
-    protected $method = 'get';
+		if (isset($filter['and'])) {
+			$this->body['filter']['and'] = $filter['and'];
+		}
 
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
+		if (isset($filter['or'])) {
+			$this->body['filter']['or'] = $filter['or'];
+		}
 
-    public function filter($filter)
-    {
-        if (!empty($filter)) {
-            $this->body['filter'] = [];
-        }
+		return $this;
+	}
 
-        if (isset($filter['and'])) {
-            $this->body['filter']['and'] = $filter['and'];
-        }
+	public function endpoint($endpoint)
+	{
+		$this->endpoint = $endpoint;
+		return $this;
+	}
 
-        if (isset($filter['or'])) {
-            $this->body['filter']['or'] = $filter['or'];
-        }
+	public function method($method)
+	{
+		$this->method = $method;
+		return $this;
+	}
 
-        return $this;
-    }
+	public function get($id = null)
+	{
+		if ($this->body) {
+			$this->options = [
+				'body' => json_encode($this->body),
+			];
+		}
 
-    public function endpoint($endpoint)
-    {
-        $this->endpoint = $endpoint;
-        return $this;
-    }
+		$endpoint = $this->getEndpoint($id);
+		$response = $this->client->{$this->method}($endpoint, $this->options);
 
-    public function method($method)
-    {
-        $this->method = $method;
-        return $this;
-    }
+		return $response->getJson();
+	}
 
-    public function get($id = null)
-    {
-        if ($this->body) {
-            $this->options = [
-                'body' => json_encode($this->body),
-            ];
-        }
 
-        if ($id && !str_contains($this->endpoint, $id)) {
-            $this->endpoint .= '/' . $id;
-        }
+	public function query($query)
+	{
+		if (isset($query))
+			$this->body['query'] = $query;
+		else
+			unset($this->body['query']);
+		return $this;
+	}
 
-        $response = $this->client->{$this->method}($this->endpoint, $this->options);
+	public function setFilter(array $data)
+	{
+		$this->body['filter'] = $data;
+		return $this;
+	}
 
-        return $response->getJson();
-    }
+	protected function getEndpoint($id)
+	{
+		if ($id && !str_contains($this->endpoint, $id)) {
+			$this->endpoint .= '/' . $id;
+		}
+		return $this->endpoint;
+	}
 }

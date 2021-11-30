@@ -11,7 +11,7 @@ class Resource
 {
     use Filterable;
 
-    protected $notion;
+    protected Notion $notion;
 
     protected $id;
 
@@ -40,32 +40,20 @@ class Resource
 
     public function get()
     {
-        //
-        $result = null;
+        $response = $this->getRequest();
+        return $this->notion->toResponse($response);
+    }
 
-        //
-        $client = $this->notion
-            ->getClient();
-
-        //
-        $response = (new Request($client))
+    /**
+     * @param \Notion\Http\Client $client
+     * @return mixed
+     */
+    public function getRequest()
+    {
+        return $this->notion->getRequest()
             ->filter($this->filter)
             ->endpoint($this->endpoint)
             ->method($this->method)
             ->get($this->id);
-
-        if ($response->object === 'list') {
-            $result = new Collection($response, $this->notion);
-        } else {
-            if ($response->object === 'page') {
-                $result = new Page($response, $this->notion);
-            }
-
-            if ($response->object === 'database') {
-                $result = new Database($response, $this->notion);
-            }
-        }
-
-        return $result;
     }
 }

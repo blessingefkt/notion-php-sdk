@@ -6,10 +6,12 @@ class Title extends PropertyBase
 {
     public function value()
     {
+        if (isset($this->config->title->text)) {
+            return $this->config->title->text->content;
+        }
         if (!is_array($this->config->title)) {
             return '';
         }
-
         return $this->config->title[0]->text->content;
     }
 
@@ -18,8 +20,8 @@ class Title extends PropertyBase
         if (!is_array($this->config->title)) {
             $this->config->title = [];
 
-            $this->config->title[] = (object) [
-                'text' => (object) [
+            $this->config->title[] = (object)[
+                'text' => (object)[
                     'content' => $value,
                 ],
             ];

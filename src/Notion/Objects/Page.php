@@ -1,23 +1,24 @@
 <?php namespace Notion\Objects;
 
+use Notion\BlockBase;
 use Notion\ObjectBase;
-use Notion\Http\Response;
 
 class Page extends ObjectBase
 {
+    protected $childEndpoint = 'blocks';
     protected $endpoint = 'pages';
+    /**
+     * @var BlockBase[]
+     */
+    public $children = [];
 
-    protected $properties = [];
-
-    protected $parent;
-
-    protected $children = [];
+    public $parent;
 
     public function get(): self
     {
         $client = $this->notion->getClient();
 
-        $response = $client->get('pages/' . $this->id);
+        $response = $client->get($this->endpoint . '/' . $this->id);
 
         $data = $response->getJson();
 
@@ -48,7 +49,7 @@ class Page extends ObjectBase
         ];
 
         foreach ($this->properties as $property) {
-            $value = $property->get();
+            $value = $property->toPageValue();
 
             if (!$value) {
                 continue;
@@ -58,14 +59,8 @@ class Page extends ObjectBase
         }
 
         if (count($this->children) > 0) {
-            $data['children'] = [];
-
-            foreach ($this->children as $child) {
-                $data['children'][] = $child->get();
-            }
+            $data['children'] = $this->getChildrenRequestData();
         }
-
-        ray($data);
 
         return $data;
     }
@@ -109,10 +104,10 @@ class Page extends ObjectBase
         ];
 
         if (!$this->id) {
-            return $this->notion->getClient()->post('pages', $options);
+            return $this->notion->getClient()->post($this->endpoint, $options);
         }
 
-        return $this->notion->getClient()->patch('pages/' . $this->id, $options);
+        return $this->notion->getClient()->patch($this->endpoint . '/' . $this->id, $options);
     }
 
     public function setContext($context): self
@@ -124,8 +119,29 @@ class Page extends ObjectBase
 
     public function children()
     {
-        $response = $this->notion->getClient()->get('blocks/' . $this->id . '/children');
-        $result = new Collection($response->getJson(), $this->notion);
-        return $result;
+        $response = $this->notion->getClient()->get($this->childEndpoint . '/' . $this->id . '/children');
+        return new Collection($response->getJson(), $this->notion);
     }
+
+    public function appendChildren()
+    {
+        $client = $this->notion->getClient();
+        $options = [
+            'body' => json_encode(['children' => $this->getChildrenRequestData()]),
+        ];
+        $result = $client->patch($this->childEndpoint . '/' . $this->id . '/children', $options);
+        return $this->notion->toResponse($result);
+    }
+
+    protected function getChildrenRequestData()
+    {
+        $data = [];
+        if (count($this->children) > 0) {
+            foreach ($this->children as $child) {
+                $data[] = $child->get();
+            }
+        }
+        return $data;
+    }
+
 }

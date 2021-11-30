@@ -27,6 +27,16 @@ class Filter
         }
     }
 
+    public static function make(string $property, string $type, $value, string $method = 'equals')
+    {
+        $filter = new self();
+        $filter->type = $type;
+        $filter->property = $property;
+        $filter->value = $value;
+        $filter->method = $method;
+        return $filter;
+    }
+
     public function prepareForRequest()
     {
         return [

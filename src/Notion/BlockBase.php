@@ -18,9 +18,20 @@ class BlockBase
 
     public $plain_text = '';
 
-    public function __construct($richText)
+    public function __construct($richText = null)
     {
-        $this->plain_text = $richText->plain_text;
+        if ($richText instanceof RichText || (is_object($richText) && isset($richText->plain_text)))
+            $this->plain_text = $richText->plain_text;
+    }
+
+    public static function make(string $type, array $configuation, string $id = null)
+    {
+        $block = new self();
+        $block->type = $type;
+        $block->typeConfiguration = $configuation;
+        if (isset($id))
+            $block->id = $id;
+        return $block;
     }
 
     public function get(): array

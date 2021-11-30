@@ -2,16 +2,30 @@
 
 class PropertyBase
 {
+    /**
+     * @var callable
+     */
+    public static $idEncoder = null;
     public $name;
+    public $id;
+    public $encodedId;
+    public $alias;
+    /**
+     * @var \stdClass
+     */
+    public $config;
 
     protected $filterType = 'text';
-
-    protected $config;
 
     public function __construct($name, $config)
     {
         $this->name = $name;
         $this->config = $config;
+        $this->id = $config->id ? urldecode($config->id) : null;
+        if (isset($this->id, self::$idEncoder))
+            $this->encodedId = call_user_func(self::$idEncoder, $this->id);
+        else
+            $this->encodedId = $config->id;
     }
 
     public function value()
@@ -22,6 +36,12 @@ class PropertyBase
     public function set($value): void
     {
         $this->config->{$this->config->type} = $value;
+    }
+
+
+    public function getValue()
+    {
+        return null;
     }
 
     public function get()
@@ -37,8 +57,8 @@ class PropertyBase
         ];
     }
 
-    public function getValue()
+    public function toPageValue()
     {
-        return null;
+        return $this->get();
     }
 }

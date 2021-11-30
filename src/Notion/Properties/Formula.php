@@ -6,6 +6,6 @@ class Formula extends PropertyBase
 {
     public function value()
     {
-        return $this->config->formula->string;
+        return $this->config->formula->{$this->config->formula->type};
     }
 }

@@ -1,7 +1,7 @@
 <?php namespace Notion\Objects;
 
-use Notion\RichText;
 use Notion\ObjectBase;
+use Notion\RichText;
 
 class Database extends ObjectBase
 {
@@ -9,14 +9,11 @@ class Database extends ObjectBase
 
     public $name;
 
-    protected $properties = [];
-
     protected function handleResponse($data): void
     {
         $this->setProperties($data);
 
         $title = new RichText($data->title);
-
         $this->name = $title->plain_text;
     }
 
