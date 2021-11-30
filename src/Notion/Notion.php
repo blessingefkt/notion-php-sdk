@@ -100,7 +100,7 @@ class Notion
         } elseif ($response->object === 'list') {
             return $this->toPropertyResponse($response->results[0]);
         } elseif ($response->object === 'block') {
-            return new \Notion\Objects\Block($response, $this);
+            return new Objects\Block($response, $this);
         } else {
             return $this->toPageProperty('', $response);
         }
@@ -109,7 +109,13 @@ class Notion
 
     public function toPageProperty($label, $property)
     {
-        switch ($property->type) {
+        $type = null;
+        if (isset($property->config))
+            $type = $property->config->type;
+        elseif (isset($property->type))
+            $type = $property->type;
+
+        switch ($type) {
             case 'title':
                 return new Title($label, $property);
             case 'relation':
@@ -181,9 +187,15 @@ class Notion
         return $block;
     }
 
-    public function isWritableProperty($property): bool
+    public static function isWritableProperty($type): bool
     {
-        switch ($property->type) {
+        if (!is_scalar($type)) {
+            if (isset($type->config))
+                $type = $type->config->type;
+            elseif (isset($type->type))
+                $type = $type->type;
+        }
+        switch ($type) {
             case 'title':
             case 'relation':
             case 'checkbox':

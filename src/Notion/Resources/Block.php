@@ -21,7 +21,7 @@ class Block extends Resource
         return parent::get();
     }
 
-    public function getRequest()
+    public function sendRequest()
     {
         return $this->notion->getRequest()
             ->filter($this->filter)

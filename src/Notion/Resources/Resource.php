@@ -1,11 +1,7 @@
 <?php namespace Notion\Resources;
 
 use Notion\Notion;
-use Notion\Objects\Page;
-use Notion\Http\Request;
-use Notion\Objects\Database;
 use Notion\Traits\Filterable;
-use Notion\Objects\Collection;
 
 class Resource
 {
@@ -40,7 +36,7 @@ class Resource
 
     public function get()
     {
-        $response = $this->getRequest();
+        $response = $this->sendRequest();
         return $this->notion->toResponse($response);
     }
 
@@ -48,7 +44,7 @@ class Resource
      * @param \Notion\Http\Client $client
      * @return mixed
      */
-    public function getRequest()
+    public function sendRequest()
     {
         return $this->notion->getRequest()
             ->filter($this->filter)

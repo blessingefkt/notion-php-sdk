@@ -22,7 +22,7 @@ class ObjectBase
      */
     public $properties = [];
 
-    protected $propertyIdMap = [];
+    protected $propertyAliases = [];
 
     public function __construct($data, $notion)
     {
@@ -50,12 +50,34 @@ class ObjectBase
             $this->archived = $data->archived;
         }
 
-        foreach ($data->properties as $label => $property) {
-            $propertyObj = $this->createNewProperty($label, $property);
-            $propertyObj->alias = Str::camel($label);
-            $this->propertyIdMap[$propertyObj->encodedId] = $propertyObj->alias;
-            $this->properties[$propertyObj->alias] = $propertyObj;
+        $this->indexProperties($data->properties);
+    }
+
+    public function indexProperties($data)
+    {
+        $this->propertyAliases = [];
+        $this->properties = [];
+        foreach ($data as $label => $property) {
+            if ($property instanceof PropertyBase) {
+                $propertyObj = clone $property;
+                $propertyObj->config = clone $property->config;
+                $alias = $property->alias;
+            } else {
+                $propertyObj = $this->createNewProperty($property->name ?: $label, $property);
+                $alias = Str::camel($label);
+            }
+            $propertyObj->alias = $alias;
+            $this->propertyAliases[$propertyObj->config->id] = $alias;
+            $this->propertyAliases[$label] = $alias;
+            $this->propertyAliases[$propertyObj->encodedId] = $alias;
+            $this->properties[$alias] = $propertyObj;
         }
+    }
+
+    public function initProperties($data): self
+    {
+        $this->indexProperties($data);
+        return $this;
     }
 
     /**

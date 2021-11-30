@@ -21,11 +21,9 @@ class Search extends Resource
     /**
      * @return mixed
      */
-    public function getRequest()
+    public function sendRequest()
     {
-        /** @var NotionRequest $request */
-        $request = $this->notion->getRequest();
-        return $request
+        return $this->notion->getRequest()
             ->setFilter($this->typeFilter)
             ->query($this->query)
             ->endpoint($this->endpoint)
@@ -53,7 +51,7 @@ class Search extends Resource
 
     public function get(): Collection
     {
-        $response = $this->getRequest();
+        $response = $this->sendRequest();
         return $this->notion->toResponse($response);
     }
 

@@ -26,14 +26,14 @@ class PageProperty extends Resource
         if (empty($this->id) || empty($this->propertyId))
             return null;
 
-        $response = $this->getRequest();
+        $response = $this->sendRequest();
         return $this->notion->toPropertyResponse($response);
     }
 
     /**
      * @return mixed
      */
-    public function getRequest()
+    public function sendRequest()
     {
         return $this->notion->getRequest()
             ->filter($this->filter)

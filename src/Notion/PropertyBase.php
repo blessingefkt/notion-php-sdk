@@ -21,11 +21,18 @@ class PropertyBase
     {
         $this->name = $name;
         $this->config = $config;
-        $this->id = $config->id ? urldecode($config->id) : null;
-        if (isset($this->id, self::$idEncoder))
-            $this->encodedId = call_user_func(self::$idEncoder, $this->id);
+        if ($config->id)
+            [$this->id, $this->encodedId] = self::normalizeId($config->id);
+    }
+
+    public static function normalizeId(string $idFromApi)
+    {
+        $decoded = urldecode($idFromApi);
+        if (!empty(static::$idEncoder))
+            $encoded = call_user_func(static::$idEncoder, $decoded);
         else
-            $this->encodedId = $config->id;
+            $encoded = $idFromApi;
+        return [$decoded, $encoded];
     }
 
     public function value()
