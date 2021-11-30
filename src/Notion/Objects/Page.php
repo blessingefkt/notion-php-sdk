@@ -74,16 +74,19 @@ class Page extends ObjectBase
 
     public function __get($property)
     {
+        $property = $this->propertyIdMap[$property] ?? $property;
+
         if (!isset($this->properties[$property])) {
             return $this->$property;
         }
 
-        return $this->properties[$property]
-            ->value();
+        return $this->properties[$property]->value();
     }
 
     public function __set($property, $value)
     {
+        $property = $this->propertyIdMap[$property] ?? $property;
+
         if (!isset($this->properties[$property])) {
             $this->$property = $value;
             return;
@@ -94,6 +97,8 @@ class Page extends ObjectBase
 
     public function __isset($property)
     {
+        $property = $this->propertyIdMap[$property] ?? $property;
+
         return isset($this->properties[$property]);
     }
 

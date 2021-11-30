@@ -22,6 +22,8 @@ class ObjectBase
      */
     public $properties = [];
 
+    protected $propertyIdMap = [];
+
     public function __construct($data, $notion)
     {
         $this->notion = $notion;
@@ -51,6 +53,7 @@ class ObjectBase
         foreach ($data->properties as $label => $property) {
             $propertyObj = $this->createNewProperty($label, $property);
             $propertyObj->alias = Str::camel($label);
+            $this->propertyIdMap[$propertyObj->encodedId] = $propertyObj->alias;
             $this->properties[$propertyObj->alias] = $propertyObj;
         }
     }
