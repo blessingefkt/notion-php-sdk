@@ -1,17 +1,18 @@
 {
-    "name": "codecycler/notion",
+    "name": "blessingefkt/notion-sdk-php",
     "description": "Notion PHP SDK",
     "type": "library",
     "keywords": [
+        "sayla",
         "Codecycler",
         "Notion"
     ],
-    "homepage": "https://github.com/codecycler/notion",
+    "homepage": "https://github.com/blessingefkt/notion",
     "license": "MIT",
     "authors": [
         {
-            "name": "Sebastiaan Kloos",
-            "email": "sebastiaan@codecycler.com",
+            "name": "Blessing R",
+            "email": "blessing@sayla.co",
             "role": "Developer"
         }
     ],
