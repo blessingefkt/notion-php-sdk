@@ -11,8 +11,14 @@ class Date extends PropertyBase
 
     public function set($value): void
     {
-        $this->config->date->start = $value;
-        unset($this->config->date->end);
+        if (is_object($value) && isset($value->start))
+            $this->config->date = $value;
+        else {
+            if (!isset($this->config->date))
+                $this->config->date = (object)['start' => null, 'end' => null];
+            $this->config->date->start = $value;
+            unset($this->config->date->end);
+        }
     }
 
     public function getValue()

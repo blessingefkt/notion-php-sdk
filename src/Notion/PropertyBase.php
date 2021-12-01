@@ -10,6 +10,7 @@ class PropertyBase
     public $id;
     public $encodedId;
     public $alias;
+    public $qualifiedId;
     /**
      * @var \stdClass
      */
