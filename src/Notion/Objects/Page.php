@@ -2,6 +2,7 @@
 
 use Notion\BlockBase;
 use Notion\ObjectBase;
+use Notion\Properties\Relation;
 
 class Page extends ObjectBase
 {
@@ -64,6 +65,12 @@ class Page extends ObjectBase
         return $data;
     }
 
+    public function getRelation($property): ?Relation
+    {
+        $property = $this->normalizePropertyName($property);
+        return $this->properties[$property] ?? null;
+    }
+
     public function getProperty($property)
     {
         $property = $this->normalizePropertyName($property);
@@ -99,15 +106,17 @@ class Page extends ObjectBase
 
     public function save()
     {
+        $data = $this->prepareForRequest();
         $options = [
-            'body' => json_encode($this->prepareForRequest()),
+            'body' => json_encode($data),
         ];
 
         if (!$this->id) {
-            return $this->notion->getClient()->post($this->endpoint, $options);
+            $result = $this->notion->getClient()->post($this->endpoint, $options);
+        } else {
+            $result = $this->notion->getClient()->patch($this->endpoint . '/' . $this->id, $options);
         }
-
-        return $this->notion->getClient()->patch($this->endpoint . '/' . $this->id, $options);
+        return $this->notion->toResponse($result->getJson());
     }
 
     public function setContext($context): self

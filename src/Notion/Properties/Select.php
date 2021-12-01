@@ -1,5 +1,6 @@
 <?php namespace Notion\Properties;
 
+use Illuminate\Support\Str;
 use Notion\PropertyBase;
 
 class Select extends PropertyBase
@@ -16,10 +17,14 @@ class Select extends PropertyBase
         if ($matchingOption) {
             $this->config->select->id = $matchingOption->id;
             $this->config->select->name = $matchingOption->name;
-            $this->config->select->color = $this->config->select->color;
+            $this->config->select->color = $matchingOption->color;
         } else {
-            $this->config->select->name = $value;
-            unset($this->config->select->id, $this->config->select->color);
+            unset($this->config->select->id, $this->config->select->name, $this->config->select->color);
+            if (Str::isUuid($value))
+                $this->config->select->id = $value;
+            else {
+                $this->config->select->name = $value;
+            }
         }
     }
 
@@ -47,9 +52,7 @@ class Select extends PropertyBase
                     'name' => $this->config->select->name
                 ]
             ];
-        return [
-            'select' => null
-        ];
+        return null;
     }
 
 }
