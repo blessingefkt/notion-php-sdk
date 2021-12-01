@@ -45,7 +45,7 @@ class Page extends ObjectBase
         $data = [
             'properties' => [],
         ];
-        
+
         if (isset($this->parent))
             $data['parent'] = $this->parent;
 
@@ -62,6 +62,12 @@ class Page extends ObjectBase
         }
 
         return $data;
+    }
+
+    public function getProperty($property)
+    {
+        $property = $this->normalizePropertyName($property);
+        return $this->properties[$property] ?? null;
     }
 
     public function __get($property)
