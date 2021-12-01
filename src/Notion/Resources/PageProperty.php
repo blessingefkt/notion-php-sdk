@@ -23,7 +23,7 @@ class PageProperty extends Resource
      */
     public function get()
     {
-        if (empty($this->id) || empty($this->propertyId))
+        if (empty($this->id) || empty($this->pageId))
             return null;
 
         $response = $this->sendRequest();
