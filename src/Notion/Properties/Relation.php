@@ -51,9 +51,9 @@ class Relation extends PropertyBase
 
     public function toPageValue()
     {
-        return [
-            'relation' => $this->value
-        ];
+        return isset($this->value)
+            ? ['relation' => $this->value]
+            : null;
     }
 
 }
