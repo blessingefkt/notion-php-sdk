@@ -117,7 +117,7 @@ class Page extends ObjectBase
 		];
 
 		$response = $this->notion->getClient()->patch($this->endpoint . '/' . $this->id, $options);
-		$result = $result->getJson();
+		$result = $response->getJson();
 		if (isset($result->object) && $result->object === 'page') {
 			$this->handleResponse($result);
 		}
