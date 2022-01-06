@@ -36,6 +36,11 @@ class Relation extends PropertyBase
         return $value;
     }
 
+    public function clear(): void
+    {
+        $this->value = [];
+    }
+
     public function set($value): void
     {
         if (isset($value))
