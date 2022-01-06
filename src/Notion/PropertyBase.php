@@ -48,7 +48,7 @@ class PropertyBase
 
     public function toFlatValue()
     {
-        return $this->value();
+        return (new PropertyValue($this->config))->value();
     }
 
     public function getValue()
