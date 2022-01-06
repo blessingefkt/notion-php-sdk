@@ -61,4 +61,16 @@ class Relation extends PropertyBase
             : null;
     }
 
+    public function toFlatValue()
+    {
+        $value = null;
+        if (isset($this->value)) {
+            $value = [];
+            foreach ($this->value as $related) {
+                $value[] = data_get($related, 'id');
+            }
+        }
+        return $value;
+    }
+
 }

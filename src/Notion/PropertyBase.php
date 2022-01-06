@@ -46,6 +46,10 @@ class PropertyBase
         $this->config->{$this->config->type} = $value;
     }
 
+    public function toFlatValue()
+    {
+        return $this->value();
+    }
 
     public function getValue()
     {
